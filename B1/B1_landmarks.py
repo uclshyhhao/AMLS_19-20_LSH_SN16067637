@@ -27,6 +27,7 @@ predictor = dlib.shape_predictor('/Users/shyhhao/Documents/AML_Assignment/AMLSas
 #     300 faces In-the-wild challenge: Database and results.
 #     Image and Vision Computing (IMAVIS), Special Issue on Facial Landmark Localisation "In-The-Wild". 2016.
 
+##chin.dat is a custom dlib face shape detector based on the above detector. It only focuses on the features of a face chin whereby there are only 17 points instead of 68.
 
 def shape_to_np(shape, dtype="int"):
     # initialize the list of (x, y)-coordinates
@@ -95,7 +96,7 @@ def extract_features_labels():
         This function extracts the landmarks features for all images in the folder 'dataset/celeba'.
         It also extracts the smilling label for each image.
         :return:
-        landmark_features:  an array containing 68 landmark points for each image in which a face was detected
+        landmark_features:  an array containing 17 landmark points for each image in which the chin area of face was detected
         smilling_labels:      an array containing the smilling label (male=0 and female=1) for each image in
         which a face was detected
         """
@@ -129,53 +130,6 @@ def extract_features_labels():
                 all_features.append(features)
                 all_labels.append(face_shape_labels[file_name])
     landmark_features = np.array(all_features)
-    face_shape_labels = np.array(all_labels) # simply converts the -1 into 0, so Smilling = 1 and Not Smilling = 0
+    face_shape_labels = np.array(all_labels) # simply converts the -1 into 0, so  = 1 and  = 0
     return landmark_features, face_shape_labels
-
-# def extract_features_labels():
-#     """
-#         This funtion extracts the landmarks features for all images in the folder 'dataset/celeba'.
-#         It also extracts the smilling label for each image.
-#         :return:
-#         landmark_features:  an array containing 68 landmark points for each image in which a face was detected
-#         smilling_labels:      an array containing the smilling label (male=0 and female=1) for each image in
-#         which a face was detected
-#         """
-#     image_paths = [os.path.join(images_dir, l) for l in os.listdir(images_dir)]
-#     target_size = None
-#     labels_file = open(os.path.join(basedir, labels_filename), 'r', encoding = 'utf-8')
-#     lines = labels_file.readlines()
-#     # print(lines)
-#     face_shape_labels = {}
-#     for i in range(len(lines)):
-#         if i == 0:
-#             continue
-#         line = lines[i]
-#         l = line.replace('\n','').split('\t')
-#         name = l[0]
-#         face_shape = int(l[2])
-#         face_shape_labels[name] = face_shape
-#     if os.path.isdir(images_dir):
-#         all_features = []
-#         all_labels = []
-
-#         for ix, img_path in enumerate(image_paths):
-#             print(str(ix) + '/' + str(len(image_paths)) + ':: img_path.split')
-#             file_name=img_path.split('.')[0].split('/')[-1]
-            
-#             # load image
-#             print(str(ix) + '/' + str(len(image_paths)) + ':: image.img_to_array()')
-#             pic = image.img_to_array(
-#                                      image.load_img(img_path,
-#                                                     target_size=target_size,
-#                                                     interpolation='bicubic'))
-
-#             print(str(ix) + '/' + str(len(image_paths)) + ':: run_dlib_shape()')
-#             features, _ = run_dlib_shape(pic)
-#             if features is not None:
-#                 all_features.append(features)
-#                 all_labels.append(face_shape_labels[file_name])
-#     landmark_features = np.array(all_features)
-#     face_shape_labels = (np.array(all_labels) + 1)/2 # simply converts the -1 into 0, so Smilling = 1 and Not Smilling = 0
-#     return landmark_features, face_shape_labels
 

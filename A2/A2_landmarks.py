@@ -96,7 +96,7 @@ def extract_features_labels():
         It also extracts the smilling label for each image.
         :return:
         landmark_features:  an array containing 68 landmark points for each image in which a face was detected
-        smilling_labels:      an array containing the smilling label (male=0 and female=1) for each image in
+        smilling_labels:      an array containing the smilling label (smilling=1 and not smilling=0) for each image in
         which a face was detected
         """
     image_paths = [os.path.join(images_dir, l) for l in os.listdir(images_dir)]

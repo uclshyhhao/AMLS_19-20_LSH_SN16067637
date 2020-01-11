@@ -7,7 +7,7 @@ import dlib
 
 # PATH TO ALL IMAGES
 global basedir, image_paths, target_size
-basedir = '/Users/shyhhao/Documents/dataset_test_AMLS_19-20/celeba_test'
+basedir = '/Users/shyhhao/Documents/AMLSassignment19_-20_LSH_SN16067637/AMLS_19-20_LSH_SN16067637/dataset_AMLS_19-20/dataset_AMLS_19-20/celeba'
 images_dir = os.path.join(basedir,'img')
 labels_filename = 'labels.csv'
 

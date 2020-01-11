@@ -111,3 +111,18 @@ plt.colorbar()
 plt.xlabel('predicted')
 plt.ylabel('actual')
 plt.show
+
+# TESTING NEW DATASET
+newX_A2, newy_A2 = a2_new.extract_features_labels()
+newY_A2 = np.array([newy_A2, -(newy_A2 - 1)]).T
+
+scaler = StandardScaler()
+newX_reshape = newX_A2.reshape(len(newX_A2), len(newX_A2[0]) * len(newX_A2[0][0]))
+temp_newX_A2 = scaler.fit_transform(newX_reshape)
+
+# Plotting Learning Curve for new accuracy
+title = 'new learning curve'
+X, y = temp_newX_A2, list(zip(*newY_A2))[0]
+estimator = svm.SVC(kernel='rbf', gamma = 0.0001, C=100)
+plot_learning_curve(estimator, title, X, y, (0.6, 1.1), n_jobs=-1) 
+

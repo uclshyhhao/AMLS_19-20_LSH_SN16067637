@@ -261,3 +261,76 @@ plt.yticks(tick_marks, classes)
 plt.xlabel("Predicted Class")
 plt.ylabel("True Class")
 plt.show()
+
+# TESTING NEW DATASET
+newdir = '/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/img'
+df_new = pd.read_csv("/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/labels.csv")
+df_new = pd.DataFrame(df_new).reset_index()
+df_new.columns = ['Index', 'Total']
+del df_new['Index']
+df_new['eye_color'] = df_new['Total'].str.split('\t').str[1]
+df_new['face_shape'] = df_new['Total'].str.split('\t').str[2]
+df_new['img_name'] = df_new['Total'].str.split('\t').str[3]
+del df_new['Total']
+del df_new['face_shape']
+df_new
+
+eyescolor = []
+for i in range(len(df_new.eye_color)):
+    if df_new.eye_color.loc[i] == '0':
+        eyescolor.append('brown')
+    elif df_new.eye_color.loc[i] == '1':
+        eyescolor.append('blue')
+    elif df_new.eye_color.loc[i] == '2':
+        eyescolor.append('green')
+    elif df_new.eye_color.loc[i] == '3':
+        eyescolor.append('gray')
+    elif df_new.eye_color.loc[i] == '4':
+        eyescolor.append('black')
+df_new['colors'] = eyescolor
+df_new
+
+xcol = 'img_name'
+ycol = 'colors'
+test_newdata = ImageDataGenerator(rescale=1./255)
+val_gen_new = test_newdata.flow_from_dataframe(dataframe = df_new,
+                                       directory = newdir,
+                                       x_col = xcol,
+                                       y_col = ycol,
+                                       class_mode = 'categorical',
+                                       target_size = (64,64),
+                                       batch_size = 1,
+                                       shuffle = False
+                                      )
+
+new_filenames = val_gen_new.filenames
+nb_samples = len(new_filenames)
+
+new_prob = model.predict_generator(val_gen_new,steps = nb_samples)
+print(len(new_filenames), len(new_prob))
+
+new_pred = np.argmax(new_prob, axis=1)
+new_true = np.array(val_gen_new.classes)
+print(len(new_pred))
+
+newcm = confusion_matrix(new_true, new_pred)
+
+print(newcm)
+
+plt.imshow(newcm, interpolation="nearest", cmap=plt.cm.Blues)
+plt.colorbar()
+# tick_marks = np.arange(len(classes))
+plt.title('New Confusion Matrix')
+plt.xlabel("New Predicted Class")
+plt.ylabel("New True Class")
+plt.show()
+
+acc = accuracy_score(new_true, new_pred)
+rec = recall_score(new_true, new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+pre = precision_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+f1 = f1_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+print("Accuracy :" + str(acc))
+print("Precision :" + str(pre))
+print("Recall :" + str(rec))
+print("F1 Score :" + str(f1))
+

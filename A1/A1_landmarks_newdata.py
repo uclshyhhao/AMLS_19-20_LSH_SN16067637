@@ -1,12 +1,13 @@
 import os
 import numpy as np
+np.set_printoptions(threshold=np.inf)
 from keras.preprocessing import image
 import cv2
 import dlib
 
 # PATH TO ALL IMAGES
 global basedir, image_paths, target_size
-basedir = '/Users/shyhhao/Documents/AMLSassignment19_-20_LSH_SN16067637/AMLS_19-20_LSH_SN16067637/dataset_AMLS_19-20/dataset_AMLS_19-20/celeba'
+basedir = '/Users/shyhhao/Documents/dataset_test_AMLS_19-20/celeba_test'
 images_dir = os.path.join(basedir,'img')
 labels_filename = 'labels.csv'
 
@@ -92,43 +93,42 @@ def run_dlib_shape(image):
 
 def extract_features_labels():
     """
-        This funtion extracts the landmarks features for all images in the folder 'dataset/celeba'.
-        It also extracts the smilling label for each image.
-        :return:
+    This funtion extracts the landmarks features for all images in the folder 'dataset/celeba'.
+    It also extracts the gender label for each image.
+    :return:
         landmark_features:  an array containing 68 landmark points for each image in which a face was detected
-        smilling_labels:      an array containing the smilling label (smilling=1 and not smilling=0) for each image in
-        which a face was detected
-        """
+        gender_labels:      an array containing the gender label (male=1 and female=0) for each image in
+                            which a face was detected
+    """
     image_paths = [os.path.join(images_dir, l) for l in os.listdir(images_dir)]
     target_size = None
     labels_file = open(os.path.join(basedir, labels_filename), 'r', encoding = 'utf-8')
     lines = labels_file.readlines()
     # print(lines)
-    smilling_labels = {}
+    gender_labels = {}
     for i in range(len(lines)):
         if i == 0:
             continue
         line = lines[i]
         l = line.replace('\n','').split('\t')
         name = l[0]
-        smilling = int(l[3])
-        smilling_labels[name] = smilling
+        gender = int(l[2])
+        gender_labels[name] = gender
     if os.path.isdir(images_dir):
         all_features = []
         all_labels = []
         for img_path in image_paths:
             file_name=img_path.split('.')[0].split('/')[-1]
-            
+
             # load image
             pic = image.img_to_array(
-                                     image.load_img(img_path,
-                                                    target_size=target_size,
-                                                    interpolation='bicubic'))
+                image.load_img(img_path,
+                               target_size=target_size,
+                               interpolation='bicubic'))
             features, _ = run_dlib_shape(pic)
             if features is not None:
                 all_features.append(features)
-                all_labels.append(smilling_labels[file_name])
+                all_labels.append(gender_labels[file_name])
     landmark_features = np.array(all_features)
-    smilling_labels = (np.array(all_labels) + 1)/2 # simply converts the -1 into 0, so Smilling = 1 and Not Smilling = 0
-    return landmark_features, smilling_labels
-
+    gender_labels = (np.array(all_labels) + 1)/2 # simply converts the -1 into 0, so male=1 and female=0
+    return landmark_features, gender_labels

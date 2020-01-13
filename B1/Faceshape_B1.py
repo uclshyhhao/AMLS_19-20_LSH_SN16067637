@@ -1,7 +1,10 @@
 # Importing all necessary libraries for SVM
 import os
 import sys
-sys.path.append(os.path.abspath(r"//Users/shyhhao/Documents/AML_Assignment/AMLSassignment19_-20_SN16067637/B1"))
+# sys.path.append(os.path.abspath(r"//Users/shyhhao/Documents/AMLSassignment19_-20_LSH_SN16067637/AMLS_19-20_LSH_SN16067637/B1"))
+
+sys.path.append(os.getcwd())
+
 import B1_landmarks as b1
 import numpy as np
 import matplotlib.pyplot as plt
@@ -59,58 +62,64 @@ def B1_SVM(training_images, training_labels, test_images, test_labels):
     
     return acc_B1_train, acc_B1_test, pred_B1
 
-# Plotting learning curve
-def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
-                        n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
+tr_X_B1, tr_Y_B1, te_X_B1, te_Y_B1= get_data_B1()
+
+model_B1 = B1_SVM(tr_X_B1, list(zip(*tr_Y_B1))[0], te_X_B1, list(zip(*te_Y_B1))[0])
+
+acc_B1_train, acc_B1_test, pred_B1 = model_B1
+
+# # Plotting learning curve
+# def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
+#                         n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
     
-    plt.figure()
-    plt.title(title)
-    if ylim is not None:
-        plt.ylim(*ylim)
-    plt.xlabel("Training examples")
-    plt.ylabel("Score")
-    train_sizes, train_scores, test_scores = learning_curve(
-        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-    plt.grid()
+#     plt.figure()
+#     plt.title(title)
+#     if ylim is not None:
+#         plt.ylim(*ylim)
+#     plt.xlabel("Training examples")
+#     plt.ylabel("Score")
+#     train_sizes, train_scores, test_scores = learning_curve(
+#         estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
+#     train_scores_mean = np.mean(train_scores, axis=1)
+#     train_scores_std = np.std(train_scores, axis=1)
+#     test_scores_mean = np.mean(test_scores, axis=1)
+#     test_scores_std = np.std(test_scores, axis=1)
+#     plt.grid()
 
-    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
-                     train_scores_mean + train_scores_std, alpha=0.1,
-                     color="r")
-    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
-                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
-    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
-             label="Training score")
-    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
-             label="Cross-validation score")
+#     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+#                      train_scores_mean + train_scores_std, alpha=0.1,
+#                      color="r")
+#     plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+#                      test_scores_mean + test_scores_std, alpha=0.1, color="g")
+#     plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+#              label="Training score")
+#     plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+#              label="Cross-validation score")
 
-    plt.legend(loc="best")
-    return plt
-# Learning Curve
-title = "Learning Curves SVM"
+#     plt.legend(loc="best")
+#     return plt
+# # Learning Curve
+# title = "Learning Curves SVM"
 
-cv = ShuffleSplit(n_splits=100, test_size=0.2, random_state=0)
-estimator = svm.SVC(kernel='rbf', gamma=1e-3, C=100)
-X, y = tr_X_B1, list(zip(*tr_Y_B1))[0]
-plot_learning_curve(estimator, title, X, y, (0.6, 0.9), cv=cv, n_jobs=-1)
+# cv = ShuffleSplit(n_splits=100, test_size=0.2, random_state=0)
+# estimator = svm.SVC(kernel='rbf', gamma=1e-3, C=100)
+# X, y = tr_X_B1, list(zip(*tr_Y_B1))[0]
+# plot_learning_curve(estimator, title, X, y, (0.6, 0.9), cv=cv, n_jobs=-1)
 
-plt.show()
+# plt.show()
 
-# Confusion Matrix
-test_label = list(zip(*te_Y_B1))[0]
-cf = confusion_matrix(test_label, pred_B1)
-# print(cf)
-cmap = plt.cm.Blues
+# # Confusion Matrix
+# test_label = list(zip(*te_Y_B1))[0]
+# cf = confusion_matrix(test_label, pred_B1)
+# # print(cf)
+# cmap = plt.cm.Blues
 
-plt.matshow(cf, cmap = cmap)
-plt.title('Confusion matrix')
-plt.colorbar()
-plt.xlabel('predicted')
-plt.ylabel('actual')
-plt.show
+# plt.matshow(cf, cmap = cmap)
+# plt.title('Confusion matrix')
+# plt.colorbar()
+# plt.xlabel('predicted')
+# plt.ylabel('actual')
+# plt.show
 
 # ===========================================================================================================================
 # USING Convolutional Neural Network
@@ -212,97 +221,135 @@ model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy
 
 print(model.summary())
 
-# Learning curve of accuracy from history of CNN
-num_epochs = 25
-epoch_nums = range(1,num_epochs+1)
-training_acc = cnn_training.history['acc']
-validation_acc = cnn_training.history['val_acc']
-plt.figure(figsize=(10,8))
-plt.plot(epoch_nums, training_acc)
-plt.plot(epoch_nums, validation_acc)
-plt.xlabel('epoch')
-plt.ylabel('accuracy')
-plt.legend(['training', 'validation'], loc='lower right')
-plt.show()
+from datetime import datetime
+start = datetime.now()
+cnn_training_B1 = model.fit_generator(train_gen, 
+                                   steps_per_epoch = train_gen.samples // 32,
+                                   validation_data = val_gen, 
+                                   validation_steps = val_gen.samples // 32,
+                                   epochs = 10
+                                  )
+print(datetime.now() - start)
 
-# Confusion matrix
-print("Generating predictions from validation data..")
+# CNN metric evaluation for B1
+print("Preparing testing dataset..")
+test_data_B1 = ImageDataGenerator(rescale=1./255)
+test_gen_B1 = test_data_B1.flow_from_dataframe(dataframe=test,
+                                         directory=srcdir,
+                                         x_col=xcol,
+                                         y_col=ycol,
+                                         class_mode="categorical",
+                                         target_size = (64,64),
+                                         batch_size=1,
+                                         shuffle=False
+                                        )
 
-x_test = val_gen[0][0]
-y_test = val_gen[0][1]
+filenames_B1 = test_gen_B1.filenames
+nb_samples_B1 = len(filenames_B1)
 
-class_probabilities = model.predict(x_test)
+prob_B1 = model.predict_generator(test_gen_B1,steps = nb_samples_B1)
 
-predictions = np.argmax(class_probabilities, axis=1)
+pred_B1 = np.argmax(prob_B1, axis=1)
+true_B1 = np.array(test_gen_B1.classes)
+# print(len(pred))
 
-true_labels = np.argmax(y_test, axis=1)
+# newcm = confusion_matrix(true_B1, pred_b1)
+# print(newcm)
 
-classes = ["0", "1", "2", "3" , "4"]
 
-cm = confusion_matrix(true_labels, predictions)
-# print(cm)
-plt.figure(figsize=(8,10))
-plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Reds)
-plt.colorbar()
-tick_marks = np.arange(len(classes))
-plt.xticks(tick_marks, classes , rotation=85)
-plt.yticks(tick_marks, classes)
-plt.xlabel("Predicted Class")
-plt.ylabel("True Class")
-plt.show()
 
-# TESTING NEW DATASET 
-df_new = pd.read_csv("/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/labels.csv")
-df_new = pd.DataFrame(df_new).reset_index()
-df_new.columns = ['Index', 'Total']
-del df_new['Index']
-df_new['eye_color'] = df_new['Total'].str.split('\t').str[1]
-df_new['face_shape'] = df_new['Total'].str.split('\t').str[2]
-df_new['img_name'] = df_new['Total'].str.split('\t').str[3]
-del df_new['Total']
-del df_new['eye_color']
-df_new
+# # Learning curve of accuracy from history of CNN
+# num_epochs = 25
+# epoch_nums = range(1,num_epochs+1)
+# training_acc = cnn_training_B1.history['acc']
+# validation_acc = cnn_training_B1.history['val_acc']
+# plt.figure(figsize=(10,8))
+# plt.plot(epoch_nums, training_acc)
+# plt.plot(epoch_nums, validation_acc)
+# plt.xlabel('epoch')
+# plt.ylabel('accuracy')
+# plt.legend(['training', 'validation'], loc='lower right')
+# plt.show()
 
-newdir = '/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/img'xcol = 'img_name'
-ycol = 'face_shape'
-test_newdata = ImageDataGenerator(rescale=1./255)
-val_gen_new = test_newdata.flow_from_dataframe(dataframe = df_new,
-                                               directory = newdir,
-                                               x_col = xcol,
-                                               y_col = ycol,
-                                               class_mode = 'categorical',
-                                               target_size = (64,64),
-                                               batch_size = 1,
-                                               shuffle = False
-                                              )
+# # Confusion matrix
+# print("Generating predictions from validation data..")
 
-new_filenames = val_gen_new.filenames
-nb_samples = len(new_filenames)
+# x_test = val_gen[0][0]
+# y_test = val_gen[0][1]
 
-new_prob = model.predict_generator(val_gen_new,steps = nb_samples)
-print(len(new_filenames), len(new_prob))
+# class_probabilities = model.predict(x_test)
 
-new_pred = np.argmax(new_prob, axis=1)
-new_true = np.array(val_gen_new.classes)
-print(len(new_pred))
+# predictions = np.argmax(class_probabilities, axis=1)
 
-newcm = confusion_matrix(new_true, new_pred)
+# true_labels = np.argmax(y_test, axis=1)
 
-print(newcm)
+# classes = ["0", "1", "2", "3" , "4"]
 
-plt.imshow(newcm, interpolation="nearest", cmap=plt.cm.Blues)
-plt.colorbar()
-tick_marks = np.arange(len(classes))
-plt.title('New Confusion Matrix')
-plt.xlabel("New Predicted Class")
-plt.ylabel("New True Class")
-plt.show()
+# cm = confusion_matrix(true_labels, predictions)
+# # print(cm)
+# plt.figure(figsize=(8,10))
+# plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Reds)
+# plt.colorbar()
+# tick_marks = np.arange(len(classes))
+# plt.xticks(tick_marks, classes , rotation=85)
+# plt.yticks(tick_marks, classes)
+# plt.xlabel("Predicted Class")
+# plt.ylabel("True Class")
+# plt.show()
 
-acc = accuracy_score(new_true, new_pred)
-rec = recall_score(new_true, new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
-pre = precision_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
-f1 = f1_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
-print("Accuracy :" + str(acc))
-print("Precision :" + str(pre))
-print("Recall :" + str(rec))
-print("F1 Score :" + str(f1))
+# # TESTING NEW DATASET 
+# df_new = pd.read_csv("/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/labels.csv")
+# df_new = pd.DataFrame(df_new).reset_index()
+# df_new.columns = ['Index', 'Total']
+# del df_new['Index']
+# df_new['eye_color'] = df_new['Total'].str.split('\t').str[1]
+# df_new['face_shape'] = df_new['Total'].str.split('\t').str[2]
+# df_new['img_name'] = df_new['Total'].str.split('\t').str[3]
+# del df_new['Total']
+# del df_new['eye_color']
+# df_new
+
+# newdir = '/Users/shyhhao/Documents/dataset_test_AMLS_19-20/cartoon_set_test/img'
+# xcol = 'img_name'
+# ycol = 'face_shape'
+# test_newdata = ImageDataGenerator(rescale=1./255)
+# val_gen_new = test_newdata.flow_from_dataframe(dataframe = df_new,
+#                                                directory = newdir,
+#                                                x_col = xcol,
+#                                                y_col = ycol,
+#                                                class_mode = 'categorical',
+#                                                target_size = (64,64),
+#                                                batch_size = 1,
+#                                                shuffle = False
+#                                               )
+
+# new_filenames = val_gen_new.filenames
+# nb_samples = len(new_filenames)
+
+# new_prob = model.predict_generator(val_gen_new,steps = nb_samples)
+# print(len(new_filenames), len(new_prob))
+
+# new_pred = np.argmax(new_prob, axis=1)
+# new_true = np.array(val_gen_new.classes)
+# print(len(new_pred))
+
+# newcm = confusion_matrix(new_true, new_pred)
+
+# print(newcm)
+
+# plt.imshow(newcm, interpolation="nearest", cmap=plt.cm.Blues)
+# plt.colorbar()
+# tick_marks = np.arange(len(classes))
+# plt.title('New Confusion Matrix')
+# plt.xlabel("New Predicted Class")
+# plt.ylabel("New True Class")
+# plt.show()
+
+# acc = accuracy_score(new_true, new_pred)
+# rec = recall_score(new_true, new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+# pre = precision_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+# f1 = f1_score(new_true,new_pred, pos_label = 'positive', average ='macro') ## Weighted using macro
+# print("Accuracy :" + str(acc))
+# print("Precision :" + str(pre))
+# print("Recall :" + str(rec))
+# print("F1 Score :" + str(f1))

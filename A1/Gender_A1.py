@@ -1,7 +1,10 @@
 # Importing all necessary libraries
 import os
 import sys
-sys.path.append(os.path.abspath(r"//Users/shyhhao/Documents/AML_Assignment/AMLSassignment19_-20_SN16067637/A1"))
+# sys.path.append(os.path.abspath(r"//Users/shyhhao/Documents/AMLSassignment19_-20_LSH_SN16067637/AMLS_19-20_LSH_SN16067637/A1"))
+
+sys.path.append(os.getcwd())
+
 import A1_landmarks as a1
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,70 +61,76 @@ def A1_SVM(training_images, training_labels, test_images, test_labels):
     
     return acc_A1_train, acc_A1_test, pred_A1
 
-# Plotting learning curves
-def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
-                        n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
+tr_X_A1, tr_Y_A1, te_X_A1, te_Y_A1= get_data_A1()
+
+model_A1 = A1_SVM(tr_X_A1, list(zip(*tr_Y_A1))[0], te_X_A1, list(zip(*te_Y_A1))[0])
+
+acc_A1_train, acc_A1_test, pred_A1 = model_A1
+
+# # Plotting learning curves
+# def plot_learning_curve(estimator, title, X, y, ylim=None, cv=None,
+#                         n_jobs=1, train_sizes=np.linspace(.1, 1.0, 5)):
     
-    plt.figure()
-    plt.title(title)
-    if ylim is not None:
-        plt.ylim(*ylim)
-    plt.xlabel("Training examples")
-    plt.ylabel("Score")
-    train_sizes, train_scores, test_scores = learning_curve(
-        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
-    train_scores_mean = np.mean(train_scores, axis=1)
-    train_scores_std = np.std(train_scores, axis=1)
-    test_scores_mean = np.mean(test_scores, axis=1)
-    test_scores_std = np.std(test_scores, axis=1)
-    plt.grid()
+#     plt.figure()
+#     plt.title(title)
+#     if ylim is not None:
+#         plt.ylim(*ylim)
+#     plt.xlabel("Training examples")
+#     plt.ylabel("Score")
+#     train_sizes, train_scores, test_scores = learning_curve(
+#         estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
+#     train_scores_mean = np.mean(train_scores, axis=1)
+#     train_scores_std = np.std(train_scores, axis=1)
+#     test_scores_mean = np.mean(test_scores, axis=1)
+#     test_scores_std = np.std(test_scores, axis=1)
+#     plt.grid()
 
-    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
-                     train_scores_mean + train_scores_std, alpha=0.1,
-                     color="r")
-    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
-                     test_scores_mean + test_scores_std, alpha=0.1, color="b")
-    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
-             label="Training score")
-    plt.plot(train_sizes, test_scores_mean, 'o-', color="b",
-             label="Cross-validation score")
+#     plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+#                      train_scores_mean + train_scores_std, alpha=0.1,
+#                      color="r")
+#     plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+#                      test_scores_mean + test_scores_std, alpha=0.1, color="b")
+#     plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+#              label="Training score")
+#     plt.plot(train_sizes, test_scores_mean, 'o-', color="b",
+#              label="Cross-validation score")
 
-    plt.legend(loc="best")
-    return plt
-# Learning Curve
-title = "Learning Curves SVM"
+#     plt.legend(loc="best")
+#     return plt
+# # Learning Curve
+# title = "Learning Curves SVM"
 
-cv = ShuffleSplit(n_splits=100, test_size=0.2, random_state=0)
-estimator = svm.SVC(kernel='linear', C=1)
-X, y = tr_X_A1, list(zip(*tr_Y_A1))[0]
-plot_learning_curve(estimator, title, X, y, (0.85, 1.01), cv=cv, n_jobs=-1)
+# cv = ShuffleSplit(n_splits=100, test_size=0.2, random_state=0)
+# estimator = svm.SVC(kernel='linear', C=1)
+# X, y = tr_X_A1, list(zip(*tr_Y_A1))[0]
+# plot_learning_curve(estimator, title, X, y, (0.85, 1.01), cv=cv, n_jobs=-1)
 
-plt.show()
+# plt.show()
 
-# Confusion Matrix
-test_label = list(zip(*te_Y_A1))[0]
-cf = confusion_matrix(test_label, pred_A1)
-# print(cf)
+# # Confusion Matrix
+# test_label = list(zip(*te_Y_A1))[0]
+# cf = confusion_matrix(test_label, pred_A1)
+# # print(cf)
 
-cmap = plt.cm.Blues
+# cmap = plt.cm.Blues
 
-plt.matshow(cf, cmap = cmap)
-plt.title('Confusion matrix')
-plt.colorbar()
-plt.xlabel('predicted')
-plt.ylabel('actual')
-plt.show
+# plt.matshow(cf, cmap = cmap)
+# plt.title('Confusion matrix')
+# plt.colorbar()
+# plt.xlabel('predicted')
+# plt.ylabel('actual')
+# plt.show
 
-# TESTING NEW DATASET
-newX_A1, newy_A1 = a1_new.extract_features_labels()
-newY_A1 = np.array([newy_A1, -(newy_A1 - 1)]).T
+# # TESTING NEW DATASET
+# newX_A1, newy_A1 = a1_new.extract_features_labels()
+# newY_A1 = np.array([newy_A1, -(newy_A1 - 1)]).T
 
-scaler = StandardScaler()
-newX_reshape = newX_A1.reshape(len(newX_A1), len(newX_A1[0]) * len(newX_A1[0][0]))
-temp_newX_A1 = scaler.fit_transform(newX_reshape)
+# scaler = StandardScaler()
+# newX_reshape = newX_A1.reshape(len(newX_A1), len(newX_A1[0]) * len(newX_A1[0][0]))
+# temp_newX_A1 = scaler.fit_transform(newX_reshape)
 
-# Plotting new learning curve for accuracy
-title = 'new learning curve'
-X, y = temp_newX_A1, list(zip(*newY_A1))[0]
-estimator = svm.SVC(kernel='linear', C=1)
-plot_learning_curve(estimator, title, X, y, (0.6, 1.1), n_jobs=-1) 
+# # Plotting new learning curve for accuracy
+# title = 'new learning curve'
+# X, y = temp_newX_A1, list(zip(*newY_A1))[0]
+# estimator = svm.SVC(kernel='linear', C=1)
+# plot_learning_curve(estimator, title, X, y, (0.6, 1.1), n_jobs=-1) 

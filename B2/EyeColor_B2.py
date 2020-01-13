@@ -237,7 +237,7 @@ cnn_training_B2 = model.fit_generator(train_gen,
                                    steps_per_epoch = train_gen.samples // 32,
                                    validation_data = val_gen, 
                                    validation_steps = val_gen.samples // 32,
-                                   epochs = 10
+                                   epochs = 20
                                   )
 print(datetime.now() - start)
 
